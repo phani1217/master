@@ -4200,7 +4200,7 @@ index ddccab21fe..c48c7232d5 100644
 +#CONFIG_TESTING_METHOD_INTERRUPT=y
 \ No newline at end of file
 diff --git a/samples/net/gptp/src/main.c b/samples/net/gptp/src/main.c
-index 659208654d..0aaab1bc16 100644
+index 659208654d..4d8841696e 100644
 --- a/samples/net/gptp/src/main.c
 +++ b/samples/net/gptp/src/main.c
 @@ -16,9 +16,41 @@ LOG_MODULE_REGISTER(net_gptp_sample, LOG_LEVEL_DBG);
@@ -4273,9 +4273,9 @@ index 659208654d..0aaab1bc16 100644
 +	(TSB_IA->IMC27) |= 0xC0;
 +}
 +
-+#if defined TESTING_METHOD_PPS
++#if defined CONFIG_TESTING_METHOD_PPS
 +void pps_generate(uint32_t seconds, uint32_t nanoseconds){
-+	//const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(mac));
++	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(mac));
 +	struct eth_txzp_dev_data *dev_data = dev->data;
 +	heth = &dev_data->heth;
 +
@@ -4318,7 +4318,7 @@ index 659208654d..0aaab1bc16 100644
 +		}
 +#endif /* TESTING_METHOD_INTERRUPT */
 +				
-+#if defined(TESTING_METHOD_PPS)
++#if defined(CONFIG_TESTING_METHOD_PPS)
 +		current_time->second = heth->p_instance->SYSTEM_TIME_SECONDS;
 +		if ((heth->p_instance->SYSTEM_TIME_SECONDS == target_time)){
 +			target_time += 1;
@@ -4787,7 +4787,7 @@ index 0000000000..1f5029ee71
 +#endif /* __TXZ_DRIVER_DEF_H */
 diff --git a/soc/arm/toshiba_txzp/tmpm4n/hal_toshiba/txzp/tmpm4nx/drivers/inc/txz_ethm.h b/soc/arm/toshiba_txzp/tmpm4n/hal_toshiba/txzp/tmpm4nx/drivers/inc/txz_ethm.h
 new file mode 100644
-index 0000000000..fc1a39fa73
+index 0000000000..16b448262c
 --- /dev/null
 +++ b/soc/arm/toshiba_txzp/tmpm4n/hal_toshiba/txzp/tmpm4nx/drivers/inc/txz_ethm.h
 @@ -0,0 +1,662 @@
@@ -5245,7 +5245,7 @@ index 0000000000..fc1a39fa73
 +#define MAC_ADDR_2  0xa1
 +#define MAC_ADDR_3  0x7a
 +#define MAC_ADDR_4  0x15
-+#define MAC_ADDR_5  0xa1
++#define MAC_ADDR_5  0xa2
 +/**
 +  * @}
 +  */
