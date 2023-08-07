@@ -1,0 +1,498 @@
+diff --git a/drivers/clock_control/CMakeLists.txt b/drivers/clock_control/CMakeLists.txt
+index 2665e18edf..f18d3d3821 100644
+--- a/drivers/clock_control/CMakeLists.txt
++++ b/drivers/clock_control/CMakeLists.txt
+@@ -57,3 +57,4 @@ if(CONFIG_CLOCK_CONTROL_RCAR_CPG_MSSR)
+ endif()
+ 
+ zephyr_library_sources_ifdef(CONFIG_CLOCK_CONTROL_AST10X0 clock_control_ast10x0.c)
++zephyr_library_sources_ifdef(CONFIG_CLOCK_CONTROL_TXZP_CG clock_control_txzp_cg.c)
+diff --git a/drivers/clock_control/Kconfig b/drivers/clock_control/Kconfig
+index 62a84d6b50..2e3624a58d 100644
+--- a/drivers/clock_control/Kconfig
++++ b/drivers/clock_control/Kconfig
+@@ -66,4 +66,5 @@ source "drivers/clock_control/Kconfig.aspeed"
+ 
+ source "drivers/clock_control/Kconfig.gd32"
+ 
++source "drivers/clock_control/Kconfig.txzp"
+ endif # CLOCK_CONTROL
+diff --git a/drivers/ethernet/CMakeLists.txt b/drivers/ethernet/CMakeLists.txt
+index 426cb51ee8..aa89df97d3 100644
+--- a/drivers/ethernet/CMakeLists.txt
++++ b/drivers/ethernet/CMakeLists.txt
+@@ -29,7 +29,7 @@ zephyr_library_sources_ifdef(CONFIG_ETH_STM32_HAL	eth_stm32_hal.c)
+ zephyr_library_sources_ifdef(CONFIG_ETH_W5500		eth_w5500.c)
+ zephyr_library_sources_ifdef(CONFIG_ETH_SAM_GMAC	eth_sam_gmac.c)
+ zephyr_library_sources_ifdef(CONFIG_ETH_CYCLONEV	eth_cyclonev.c)
+-
++zephyr_library_sources_ifdef(CONFIG_ETH_TXZP		eth_txzp.c)
+ if(CONFIG_ETH_NXP_S32_NETC)
+   zephyr_library_sources(eth_nxp_s32_netc.c)
+   zephyr_library_sources_ifdef(CONFIG_DT_HAS_NXP_S32_NETC_PSI_ENABLED	eth_nxp_s32_netc_psi.c)
+diff --git a/drivers/ethernet/Kconfig b/drivers/ethernet/Kconfig
+index f7ee67f075..52ce751fc9 100644
+--- a/drivers/ethernet/Kconfig
++++ b/drivers/ethernet/Kconfig
+@@ -56,6 +56,7 @@ source "drivers/ethernet/Kconfig.w5500"
+ source "drivers/ethernet/Kconfig.dsa"
+ source "drivers/ethernet/Kconfig.xlnx_gem"
+ source "drivers/ethernet/Kconfig.cyclonev"
++source "drivers/ethernet/Kconfig.txzp"
+ source "drivers/ethernet/Kconfig.nxp_s32"
+ 
+ source "drivers/ethernet/phy/Kconfig"
+diff --git a/drivers/gpio/CMakeLists.txt b/drivers/gpio/CMakeLists.txt
+index 9590332c0c..d5cf740c74 100644
+--- a/drivers/gpio/CMakeLists.txt
++++ b/drivers/gpio/CMakeLists.txt
+@@ -67,6 +67,7 @@ zephyr_library_sources_ifdef(CONFIG_GPIO_TCA6424A   gpio_tca6424a.c)
+ zephyr_library_sources_ifdef(CONFIG_GPIO_SHELL      gpio_shell.c)
+ zephyr_library_sources_ifdef(CONFIG_USERSPACE   gpio_handlers.c)
+ zephyr_library_sources_ifdef(CONFIG_GPIO_XMC4XXX    gpio_xmc4xxx.c)
++zephyr_library_sources_ifdef(CONFIG_GPIO_TXZP    gpio_txzp.c)
+ zephyr_library_sources_ifdef(CONFIG_GPIO_NPM6001    gpio_npm6001.c)
+ zephyr_library_sources_ifdef(CONFIG_GPIO_RT1718S    gpio_rt1718s.c)
+ zephyr_library_sources_ifdef(CONFIG_GPIO_RT1718S    gpio_rt1718s_port.c)
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index 26917b9925..5e5763cfe0 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -178,5 +178,7 @@ source "drivers/gpio/Kconfig.rt1718s"
+ source "drivers/gpio/Kconfig.numicro"
+ 
+ source "drivers/gpio/Kconfig.zephyr"
++source "drivers/gpio/Kconfig.txzp"
++
+ 
+ endif # GPIO
+diff --git a/drivers/pinctrl/CMakeLists.txt b/drivers/pinctrl/CMakeLists.txt
+index f5ab30d7e7..d49cd64c47 100644
+--- a/drivers/pinctrl/CMakeLists.txt
++++ b/drivers/pinctrl/CMakeLists.txt
+@@ -27,4 +27,5 @@ zephyr_library_sources_ifdef(CONFIG_PINCTRL_XLNX_ZYNQ pinctrl_xlnx_zynq.c)
+ zephyr_library_sources_ifdef(CONFIG_PINCTRL_SMARTBOND pinctrl_smartbond.c)
+ zephyr_library_sources_ifdef(CONFIG_PINCTRL_XMC4XXX pinctrl_xmc4xxx.c)
+ zephyr_library_sources_ifdef(CONFIG_PINCTRL_NXP_S32 pinctrl_nxp_s32.c)
++zephyr_library_sources_ifdef(CONFIG_PINCTRL_TXZP pinctrl_txzp.c)
+ zephyr_library_sources_ifdef(CONFIG_PINCTRL_GECKO pinctrl_gecko.c)
+diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
+index 4ad102347e..dbc91db6af 100644
+--- a/drivers/pinctrl/Kconfig
++++ b/drivers/pinctrl/Kconfig
+@@ -56,6 +56,7 @@ source "drivers/pinctrl/Kconfig.xlnx"
+ source "drivers/pinctrl/Kconfig.smartbond"
+ source "drivers/pinctrl/Kconfig.xmc4xxx"
+ source "drivers/pinctrl/Kconfig.nxp_s32"
++source "drivers/pinctrl/Kconfig.txzp"
+ source "drivers/pinctrl/Kconfig.gecko"
+ 
+ endif # PINCTRL
+diff --git a/drivers/serial/CMakeLists.txt b/drivers/serial/CMakeLists.txt
+index b8af652977..c51a57b8f3 100644
+--- a/drivers/serial/CMakeLists.txt
++++ b/drivers/serial/CMakeLists.txt
+@@ -63,3 +63,4 @@ if(CONFIG_UART_NATIVE_POSIX)
+ endif()
+ 
+ zephyr_library_sources_ifdef(CONFIG_SERIAL_TEST		serial_test.c)
++zephyr_library_sources_ifdef(CONFIG_UART_TXZP		uart_txzp.c)
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 356df4f24b..6065585888 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -210,4 +210,6 @@ source "drivers/serial/Kconfig.cdns"
+ 
+ source "drivers/serial/Kconfig.opentitan"
+ 
++source "drivers/serial/Kconfig.txzp"
++
+ endif # SERIAL
+diff --git a/samples/net/gptp/CMakeLists.txt b/samples/net/gptp/CMakeLists.txt
+index 8e4559f82d..772dfb0ec8 100644
+--- a/samples/net/gptp/CMakeLists.txt
++++ b/samples/net/gptp/CMakeLists.txt
+@@ -6,3 +6,5 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+ project(gptp)
+ 
+ target_sources(app PRIVATE src/main.c src/gptp.c)
++target_include_directories(app PRIVATE ${ZEPHYR_BASE}/soc/arm/toshiba_txzp/tmpm4n/hal_toshiba/txzp/tpm4nx/drivers/inc)
++target_include_directories(app PRIVATE ${ZEPHYR_BASE}/drivers/ethernet)
+diff --git a/samples/net/gptp/Kconfig b/samples/net/gptp/Kconfig
+index fd5f1c8b32..fb01cb5faa 100644
+--- a/samples/net/gptp/Kconfig
++++ b/samples/net/gptp/Kconfig
+@@ -58,7 +58,18 @@ config NET_SAMPLE_RUN_DURATION
+ 	help
+ 	  A value of zero means that the sample application is run forever.
+ 
+-endif
++config TESTING_METHOD_PPS
++	bool "Test Clock Accuracy using PPS method on DSO"
++	default n
++	help
++	  Test Clock Accuracy using PPS method.
+ 
++config TESTING_METHOD_INTERRUPT
++	bool "Test Clock Accuracy using Interrupt method"
++	default n
++	help
++	  Test Clock Accuracy using Interrupt method
++
++endif
+ 
+ source "Kconfig.zephyr"
+diff --git a/samples/net/gptp/prj.conf b/samples/net/gptp/prj.conf
+index ddccab21fe..c48c7232d5 100644
+--- a/samples/net/gptp/prj.conf
++++ b/samples/net/gptp/prj.conf
+@@ -1,6 +1,6 @@
+ CONFIG_NETWORKING=y
+-CONFIG_NET_LOG=y
+-CONFIG_LOG=y
++CONFIG_NET_LOG=n
++CONFIG_LOG=n
+ CONFIG_NET_IPV6=y
+ CONFIG_NET_IPV4=y
+ CONFIG_NET_DHCPV4=n
+@@ -27,7 +27,7 @@ CONFIG_NET_SHELL=y
+ # Ethernet is needed for gPTP
+ CONFIG_NET_L2_ETHERNET=y
+ 
+-CONFIG_NET_CONFIG_NEED_IPV6=y
++CONFIG_NET_CONFIG_NEED_IPV6=n
+ CONFIG_NET_CONFIG_NEED_IPV4=y
+ CONFIG_NET_CONFIG_SETTINGS=y
+ 
+@@ -53,4 +53,28 @@ CONFIG_NET_TC_RX_COUNT=4
+ # Enable priority support in net_context
+ CONFIG_NET_CONTEXT_PRIORITY=y
+ 
+-CONFIG_LOG_MODE_DEFERRED=y
++CONFIG_LOG_MODE_DEFERRED=n
++
++# Enable gPTP macros
++CONFIG_PTP_CLOCK_TXZP=y
++CONFIG_NET_PKT_TIMESTAMP=y
++CONFIG_PTP_CLOCK=y
++CONFIG_NET_L2_PTP=y
++CONFIG_NET_GPTP_LOG_LEVEL_DBG=n
++CONFIG_NET_PROMISCUOUS_MODE=y
++CONFIG_NET_GPTP_NUM_PORTS=1
++CONFIG_NET_GPTP_NEIGHBOR_PROP_DELAY_THR=100000
++CONFIG_NET_GPTP_USE_DEFAULT_CLOCK_UPDATE=y
++CONFIG_NET_GPTP_INIT_LOG_PDELAY_REQ_ITV=0
++CONFIG_NET_GPTP_SYNC_RECEIPT_TIMEOUT=3
++CONFIG_NET_GPTP_BMCA_PRIORITY1=248
++CONFIG_NET_GPTP_BMCA_PRIORITY2=248	
++
++# Enable optimization levels
++#CONFIG_SPEED_OPTIMIZATIONS=y
++#CONFIG_SIZE_OPTIMIZATIONS=y
++#CONFIG_NO_OPTIMIZATIONS=y
++
++# Test Macros for Clock Accuracy
++#CONFIG_TESTING_METHOD_PPS=y
++#CONFIG_TESTING_METHOD_INTERRUPT=y
+\ No newline at end of file
+diff --git a/samples/net/gptp/src/main.c b/samples/net/gptp/src/main.c
+index 659208654d..0aaab1bc16 100644
+--- a/samples/net/gptp/src/main.c
++++ b/samples/net/gptp/src/main.c
+@@ -16,9 +16,41 @@ LOG_MODULE_REGISTER(net_gptp_sample, LOG_LEVEL_DBG);
+ #include <zephyr/net/ethernet.h>
+ #include <zephyr/net/gptp.h>
+ 
++#include <zephyr/net/net_pkt.h>
++#include <zephyr/drivers/ptp_clock.h>
++#include <zephyr/net/ethernet_mgmt.h>
++#include <zephyr/random/rand32.h>
++
++#include <zephyr/sys_clock.h>
++#include <zephyr/drivers/gpio.h>
++#include <stdio.h>
++#include <zephyr/net/ptp_time.h>
++
++#include "txz_ethm.h"
++#include "eth_txzp_priv.h"
++
++#define SLEEP_TIME_MS   500
++#define PERIOD		1000
++#define DURATION	3000
++#define ITERATION_SET_TO_TEST 20 //total number of prints observed in tera-term window per iteration
++
+ extern void init_testing(void);
++void read_time_rising();
++void print_main_isr();
++void MAIN_IRQHandler();
++
++ethm_t *heth_test;
++ethm_t *heth;
+ 
++struct net_ptp_time tm;
+ static struct gptp_phase_dis_cb phase_dis;
++struct net_ptp_time *current_time;
++
++int test_var = 0;
++uint32_t target_time = 10;
++int i = 0;
++int ret;
++uint32_t buffer_to_test[600][2];
+ 
+ #if defined(CONFIG_NET_GPTP_VLAN)
+ /* User data for the interface callback */
+@@ -156,9 +188,83 @@ static int init_app(void)
+ 	return 0;
+ }
+ 
+-void main(void)
++void read_time_rising(){
++	buffer_to_test[test_var][0]=heth_test->p_instance->SYSTEM_TIME_SECONDS;
++	buffer_to_test[test_var][1]=heth_test->p_instance->SYSTEM_TIME_NANOSECONDS;
++	test_var++; 
++}
++
++void gpio_irq_enable(){
++    // Clear and Enable gpio_irq object
++    NVIC_ClearPendingIRQ(INT13_IRQn);
++    NVIC_EnableIRQ(INT13_IRQn);
++}
++
++void print_main_isr(){
++	MAIN_IRQHandler();
++}
++
++void MAIN_IRQHandler(){
++	read_time_rising();
++	NVIC_ClearPendingIRQ(INT13_IRQn);
++	//clear bit of IMC27 here
++	(TSB_IA->IMC27) |= 0xC0;
++}
++
++#if defined TESTING_METHOD_PPS
++void pps_generate(uint32_t seconds, uint32_t nanoseconds){
++	//const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(mac));
++	struct eth_txzp_dev_data *dev_data = dev->data;
++	heth = &dev_data->heth;
++
++    heth->p_instance->PPS_CONTROL = 0x50;
++    heth->p_instance->TARGET_TIME_SECONDS = seconds;
++    heth->p_instance->TARGET_TIME_NANOSECONDS = nanoseconds;
++	heth->p_instance->PPS0_WIDTH = 0xefffff;
++	heth->p_instance->PPS0_INTERVAL = 0xffffff;
++	heth->p_instance->PPS_CONTROL |= 0x1;
++}
++#endif 
++int main(void)
+ {
+ 	init_app();
+-
+ 	init_testing();
++
++	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(mac));
++	struct eth_txzp_dev_data *dev_data = dev->data;
++	heth = &dev_data->heth;
++	heth_test = &dev_data->heth;
++
++#if defined(CONFIG_TESTING_METHOD_INTERRUPT)
++	static const struct gpio_dt_spec sw0_gpio = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios);
++	//enable interrupt input for sw0 GPIO pin
++	gpio_pin_configure_dt(&sw0_gpio, GPIO_INPUT);
++	NVIC_ClearPendingIRQ(INT13_IRQn);
++	gpio_irq_enable();
++	IRQ_CONNECT(INT13_IRQn, 0, print_main_isr, NULL, 0);	
++	(TSB_IA->IMC27) |= 9;
++#endif
++
++	while (true) {
++#if defined(CONFIG_TESTING_METHOD_INTERRUPT)
++		if(test_var>=ITERATION_SET_TO_TEST){
++			for(i=0;i<ITERATION_SET_TO_TEST;i++){
++				printf("%u.%09u\n",buffer_to_test[i][0],buffer_to_test[i][1]);
++			}
++			test_var=0;
++		}
++#endif /* TESTING_METHOD_INTERRUPT */
++				
++#if defined(TESTING_METHOD_PPS)
++		current_time->second = heth->p_instance->SYSTEM_TIME_SECONDS;
++		if ((heth->p_instance->SYSTEM_TIME_SECONDS == target_time)){
++			target_time += 1;
++			pps_generate(target_time,0);
++		}
++#endif /* TESTING_METHOD_PPS */
++
++	k_sleep(K_MSEC(500));
++	}
++
++	return 0;
+ }
+diff --git a/subsys/net/l2/ethernet/gptp/gptp.c b/subsys/net/l2/ethernet/gptp/gptp.c
+index bad1d5bf26..aa109ac2ab 100644
+--- a/subsys/net/l2/ethernet/gptp/gptp.c
++++ b/subsys/net/l2/ethernet/gptp/gptp.c
+@@ -17,7 +17,6 @@ LOG_MODULE_REGISTER(net_gptp, CONFIG_NET_GPTP_LOG_LEVEL);
+ #include "gptp_messages.h"
+ #include "gptp_mi.h"
+ #include "gptp_data_set.h"
+-
+ #include "gptp_private.h"
+ 
+ #define NET_GPTP_STACK_SIZE 2048
+@@ -88,7 +87,6 @@ static void gptp_compute_clock_identity(int port)
+ 	NET_DBG("Received %s seq %d pkt %p", (const char *)msg,	\
+ 		ntohs(hdr->sequence_id), pkt)			\
+ 
+-
+ static bool gptp_handle_critical_msg(struct net_if *iface, struct net_pkt *pkt)
+ {
+ 	struct gptp_hdr *hdr = GPTP_HDR(pkt);
+@@ -552,7 +550,6 @@ static void gptp_thread(void)
+ 
+ 	for (port = GPTP_PORT_START; port < GPTP_PORT_END; port++) {
+ 		gptp_init_port_ds(port);
+-		gptp_change_port_state(port, GPTP_PORT_DISABLED);
+ 	}
+ 
+ 	while (1) {
+@@ -624,7 +621,6 @@ void gptp_set_time_itv(struct gptp_uscaled_ns *interval,
+ 		return;
+ 	}
+ 
+-
+ 	/* NSEC_PER_SEC is between 2^30 and 2^31, seconds is less thant 2^16,
+ 	 * thus the computation will be less than 2^63.
+ 	 */
+diff --git a/subsys/net/l2/ethernet/gptp/gptp_md.c b/subsys/net/l2/ethernet/gptp/gptp_md.c
+index 750998ca40..4c3deaab19 100644
+--- a/subsys/net/l2/ethernet/gptp/gptp_md.c
++++ b/subsys/net/l2/ethernet/gptp/gptp_md.c
+@@ -50,7 +50,8 @@ static void gptp_md_follow_up_prepare(struct net_pkt *pkt,
+ 	 */
+ 	hdr->correction_field -= sync_send->upstream_tx_time;
+ 	hdr->correction_field *= sync_send->rate_ratio;
+-	hdr->correction_field += sync_send->follow_up_correction_field;
++	hdr->correction_field -= sync_send->follow_up_correction_field; /* Based on observations of delay, 
++																	added to fix delay between master and slave */
+ 	hdr->correction_field <<= 16;
+ 	hdr->correction_field = htonll(hdr->correction_field);
+ 
+@@ -116,7 +117,7 @@ static int gptp_set_md_sync_receive(int port,
+ 	sync_ts = &state->rcvd_sync_ptr->timestamp;
+ 
+ 	sync_rcv->follow_up_correction_field =
+-		(ntohll(fup_hdr->correction_field) >> 16);
++		(ntohll(fup_hdr->correction_field) >> 16);   /*Shift back 16 bits while receiving*/
+ 	memcpy(&sync_rcv->src_port_id, &sync_hdr->port_id,
+ 	       sizeof(struct gptp_port_identity));
+ 	sync_rcv->log_msg_interval = fup_hdr->log_msg_interval;
+@@ -271,6 +272,7 @@ static void gptp_md_compute_pdelay_rate_ratio(int port)
+ 			state->ini_resp_ingress_tstamp = ingress_tstamp;
+ 			state->ini_resp_evt_tstamp = resp_evt_tstamp;
+ 			state->neighbor_rate_ratio_valid = true;
++			state->init_pdelay_compute = true; /*Added to fix Neighbor Rate Ratio*/
+ 		}
+ 	}
+ 
+diff --git a/subsys/net/l2/ethernet/gptp/gptp_mi.c b/subsys/net/l2/ethernet/gptp/gptp_mi.c
+index b081ab2400..f9634aa337 100644
+--- a/subsys/net/l2/ethernet/gptp/gptp_mi.c
++++ b/subsys/net/l2/ethernet/gptp/gptp_mi.c
+@@ -955,8 +955,10 @@ static void gptp_mi_set_ps_sync_cmss(void)
+ 	 * zero instead of being copied from global_ds as it affects the final
+ 	 * value of FUP correction field.
+ 	 */
+-	sync_info->follow_up_correction_field = 0;
+-	sync_info->rate_ratio = 0;
++	sync_info->follow_up_correction_field = (current_time - global_ds->local_time.low)*global_ds->gm_rate_ratio;
++	/* As per specifications */
++	sync_info->rate_ratio = global_ds->gm_rate_ratio;
++	/* As per specifications */
+ 
+ 	memcpy(&sync_info->src_port_id.clk_id,
+ 	       GPTP_DEFAULT_DS()->clk_id,
+@@ -1100,8 +1102,7 @@ static void gptp_compute_gm_rate_ratio(void)
+ 		src_time_n.fract_nsecond -= src_time_0.fract_nsecond;
+ 	} else {
+ 		src_time_n.second -= 1U;
+-		src_time_n.fract_nsecond = (NSEC_PER_SEC * GPTP_POW2_16)
+-			- src_time_0.fract_nsecond;
++		src_time_n.fract_nsecond += (NSEC_PER_SEC * GPTP_POW2_16) - src_time_0.fract_nsecond; /*calculation correction*/
+ 	}
+ 
+ 	/* At this point local_time_n >= local_time_0 */
+@@ -1111,7 +1112,7 @@ static void gptp_compute_gm_rate_ratio(void)
+ 		local_time_n.low -= local_time_0.low;
+ 	} else {
+ 		local_time_n.high -= 1U;
+-		local_time_n.low = UINT64_MAX - local_time_0.low;
++		local_time_n.low += UINT64_MAX - local_time_0.low; /*calculation correction*/
+ 	}
+ 
+ 	/* Calculate it in nanoseconds, new_gm_rate is either 1 or -1 here */
+@@ -1306,8 +1307,8 @@ static enum gptp_received_info compare_priority_vectors(
+ {
+ 	struct gptp_hdr *hdr;
+ 	struct gptp_announce *announce;
+-	int rsi_cmp, spi_cmp, port_cmp;
+-
++	int spi_cmp, port_cmp;
++	int rsi_cmp;
+ 	hdr = GPTP_HDR(pkt);
+ 	announce = GPTP_ANNOUNCE(pkt);
+ 
+@@ -1316,15 +1317,15 @@ static enum gptp_received_info compare_priority_vectors(
+ 			 &vector->root_system_id,
+ 			 sizeof(struct gptp_root_system_identity) +
+ 			 sizeof(uint16_t));
++	
+ 	if (rsi_cmp < 0) {
+ 		/* Better rootSystemIdentity. */
+-		return GPTP_RCVD_INFO_SUPERIOR_MASTER_INFO;
++		return 	GPTP_RCVD_INFO_SUPERIOR_MASTER_INFO;
+ 	}
+ 
+ 	/* Compare sourcePortIdentity. */
+ 	spi_cmp = memcmp(&hdr->port_id, &vector->src_port_id,
+ 			 sizeof(struct gptp_port_identity));
+-
+ 	port_cmp = (int)port - ntohs(vector->port_number);
+ 
+ 	if (spi_cmp == 0) {
+@@ -1346,7 +1347,7 @@ static enum gptp_received_info compare_priority_vectors(
+ 		/* Same Grand Master but better masterPort. */
+ 		return GPTP_RCVD_INFO_SUPERIOR_MASTER_INFO;
+ 	}
+-
++	
+ 	return GPTP_RCVD_INFO_INFERIOR_MASTER_INFO;
+ }
+ 
+@@ -1559,7 +1560,7 @@ static void gptp_mi_port_announce_information_state_machine(int port)
+ 			net_pkt_unref(bmca_data->rcvd_announce_ptr);
+ 			bmca_data->rcvd_announce_ptr = NULL;
+ 		}
+-
++		
+ 		bmca_data->rcvd_msg = false;
+ 		gptp_change_pa_info_state(port, state, GPTP_PA_INFO_CURRENT);
+ 		break;
+@@ -1618,15 +1619,14 @@ static int compute_best_vector(void)
+ 	gm_prio->root_system_id.clk_quality.clock_accuracy =
+ 		default_ds->clk_quality.clock_accuracy;
+ 	gm_prio->root_system_id.clk_quality.offset_scaled_log_var =
+-		htons(default_ds->clk_quality.offset_scaled_log_var);
+-
++		(default_ds->clk_quality.offset_scaled_log_var);	/*Based on functionality to fix BMCA*/
++	
+ 	memcpy(gm_prio->src_port_id.clk_id, default_ds->clk_id,
+ 	       GPTP_CLOCK_ID_LEN);
+ 	memcpy(gm_prio->root_system_id.grand_master_id, default_ds->clk_id,
+ 	       GPTP_CLOCK_ID_LEN);
+-
++	
+ 	best_vector = gm_prio;
+-
+ 	for (port = GPTP_PORT_START; port < GPTP_PORT_END; port++) {
+ 		challenger = &GPTP_PORT_BMCA_DATA(port)->port_priority;
+ 		pa_info_state = &GPTP_PORT_STATE(port)->pa_info;
